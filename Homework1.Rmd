@@ -1,0 +1,79 @@
+---
+title: "Homework 1"
+author: "Matthew Bentz"
+date: "2/7/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1
+
+## 1. Show that $P(E') = 1 - P(E)$
+
+\begin{align*}
+P(E') + P(E) &= 1\\
+P(S) &= 1\\
+P(E') + P(E) &= P(S)\\
+P(E') &= 1 - P(E)
+\end{align*}
+
+## 2. Show that $P(\emptyset) = 0$.
+
+\begin{align*}
+P(S) &= 1\\
+P(S) + P(S') &= 1\\
+1 + P(S') &= 1\\
+P(S') &= 0\\
+P(\emptyset) &= 0
+\end{align*}
+
+## 3. If $E_1$ and $E_2$ are mutually exclusive events such that $E_1 \cup E_2 = \mathcal{S}$ and $P(E_1) \leq P(E_2)$, then what can be said about the size of the set of $E_1$ compared to $E_2$? 
+
+  The amount of events in the subset $E_1$ must be less than or equal to $E_2$ if the probability of each event is the same.
+
+# Part 2
+
+## 4. A lot contains 15 castings from a local supplier and 25 castings from a supplier in the next state. Two castings are selected randomly, without replacement, let event A be the event that the first casting is selected from the local supplier, and let B be the event that the second casting is chosen from the local supplier. Let A and B be independent events. Determine, if possible:$P(A)$, $P(B|A)$, $P(A \cup B)$.
+
+  $P(A) = 15/40$
+  $P(B|A) = 14/39$
+  $P(A \cup B) = 1 - P(A' \cap B') = 1 - 25/40 * 24/39$
+
+## 5. If $P(A|B) = .4$, $P(B) = .8$, and $P(A) = .5$ are the events A and B independent? Find $P(B|A)$.
+
+  No, the events are not independent. $P(A|B) = .5$ if they were independent.
+  $P(A|B) = P(A \cap B) / P(B)$
+  $.4 = P(A \cap B) / .8$
+  $P(A \cap B) = .32$
+  $P(B|A) = .32 / .5 = .16$
+
+## 6. The probability that a lab specimen contains high levels of contamination is .10. Five samples are checked. Assume that each sample is independent of the others. What is the probability that none contained high levels of contamination? What is the probability that exactly one sample contained high levels of contamination? What is the probability that at least one sample contained high levels of contamination?
+
+Probability that none contained high levels of contamination is $.9^5$
+Probability that exactly one contained high levels of contamination is $.9^4 * .1$
+Probability that at least one contained high levels of contamination is $1 - .9^5$
+
+## 7. Samples of a cast aluminum part are classified by their surface finish and length measurements. The results of 100 parts are listed below. Let A denote the event a sample has no scratches and B denote the event that a sample has perfect length. Are events A and B independent?
+
+```{r echo=FALSE}
+no_scratch = c(80, 2)
+minor_scratch = c(10, 8)
+
+data = rbind (no_scratch, minor_scratch)
+datum = matrix(data = data, nrow = 2, ncol = 2, byrow = T, dimnames = list(c("No Scratches", "Minor Scratches"),c("Perfect Length", "Too Short")))
+datum
+
+```
+
+$P(A \cap B) = P(A) * P(B)$ when A and B are independent.
+
+A = 90/100 (no scratches)
+B = 82/100 (perfect length)
+
+If independent, $P(A \cap B) = .738$, but instead there are 80 samples with both no scratches and perfect length. Therefore, A and B are not independent.
+
+
+

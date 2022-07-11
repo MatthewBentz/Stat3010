@@ -1,0 +1,185 @@
+---
+title: "Homework 2"
+author: "Matthew Bentz"
+date: "2/16/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1
+
+@. Let the random variable X denote the number of semiconductor wafers that need to be analyzed before a large particle of contamination is detected. Assume that the probability that a wafer has a large particle on it is .1 and that the wafers are independent. Determine the probability distribution of X. HINT: Let $p$ denote a wafer with a large particle present and $a$ denote a wafer with the large particle absent. The sample space for the random experiment is: $\mathcal{S} = \{p, ap, aap, aaap, \dots\}$. Calculate the probability of getting the first few values and see if you can find the emerging pattern to help create the probability mass function. \
+
+X ~ Geometric
+
+\begin{align*}
+P(1) &= (.1) \\
+P(2) &= (.9)(.1) \\
+P(3) &= (.9)^2(.1) \\
+P(4) &= (.9)^3(.1) \\
+pmf = P(X) &= (.9)^{x-1}(.1)
+\end{align*}
+
+@. Let X be a continuous random variable. Say if the following sentence is true or false, and give a justification to your answer. Remember that probability is represented as area under a curve for a continuous random variable.  
+$$``P(X \leq x) = P(X < x) \text{ because } P(X = x) = 0 \text{ for all possible values of } X."$$
+
+This statement is true. Since probability is represented as an area under a curve for continuous random variables, that means the probability can be calculated as the integral between two points. The probability of X=x means the integral from x to x, which is zero. 
+
+@. Four identical electronic components are wired to a controller that can switch from a failed component to one of the remaining spares. Let X denote the number of components that have failed after a specified period of operation. Is X a binomial random variable? State your assumptions and justify why or why not.
+
+X is a binomial random variable since it refers to a success/failure of the 4 components that make up the sample space (finite amount). The events are also independent, and the probability of success in each component remains constant.
+
+# Part 2
+
+@. Solve for a value of $c$ such that the following is a probability density function:
+
+$$f(x) = \begin{cases}
+c(1 - \frac{1}{x^2}) & 1 \leq x \leq 2 \\
+0 & \text{otherwise} 
+\end{cases}$$
+
+Here we integrate (Because it is a density function) from 1 to 2 (Sample Space) and set the probability equal to 1.
+The integration multiplied by c will be equal to 1, so we can find c from there. 
+
+$P(1 \leq x \leq 2) = c(1 - \frac{1}{x^2}) = 1$
+```{r}
+integrand <- function(x) {(1 - {1}/{x^2})}
+integrate(integrand, lower=1, upper=2)
+```
+\begin{align*}
+0.5c = 1 \\
+c = 2
+\end{align*}
+
+
+@. Suppose that X is a continuous random variable with pdf $f(x) = e^{-x}$ for all $x > 0$ and 0 otherwise. Determine a value of $x$ such that $P(X \leq x) = .1$.
+
+To find $x$, we need to take the integral from 0 to $a$ of the function f(x) and set this equal to 0.1. We can calculate a to find $x$ where $P(X \leq x) = 0.1$.
+
+```{r}
+integrand <- function(x) {exp(1)^{-x}}
+#Solve for the upper bound. x becomes -ln(0.9) which gives us 0.1 when integrated to.
+integrate(integrand, lower=0, upper=-log(0.9, base=exp(1)))
+
+```
+
+@. The number of messages sent per hour over a computer network has the distribution described below. Determine the mean and standard deviation of the number of messages sent per hour. 
+
+$$
+P(X=x) = f(x) = \begin{cases}
+.08 & x = 10\\
+.15 & x = 11\\
+.30 & x = 12\\
+.20 & x = 13\\
+.27 & x = 14\\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+```{r}
+#mean = E[X] = sum(x[i] * f(x), i=10, 14)$
+
+mu <- (10)*(.08) + (11)*(.15) + (12)*(.30) + (13)*(.20) + (14)*(.27)
+#mu = 12.43
+
+#variance = E[(x - mu)^2] = sum((x[i] - mu)^2 * f(x))
+variance <- ((10 - 12.43)^2 * (.08)) + ((11 - 12.43)^2 * (.15)) + 
+  ((12 - 12.43)^2 * (.30)) + ((13 - 12.43)^2 * (.20)) + ((14 - 12.43)^2 * (.27))
+#variance = 1.5651
+
+#standard deviation = sqrt(variance)
+sd <- sqrt(variance)
+#sd = 1.25104
+```
+
+
+@. Suppose $f(x) = .125x$ for all $0 < x < 4$. Determine the mean and variance of X. 
+
+Mean = integral from 0 to 4 of x*f(x)dx = integral 0,4 .125x^2dx
+Variance = integral from 0 to 4 of (x-mu)^2*f(x)dx = (x-(64/24))^2*.125xdx
+
+```{r}
+integrand2 <- function(x) {.125*x^2}
+integrate(integrand2, lower=0, upper=4)
+#mean = 2.666667 or 64/24
+
+integrand3 <- function(x) {(x-(64/24))^2 * .125*x}
+integrate(integrand3, lower=0, upper=4)
+#variance = .8888889
+```
+
+@. The diameter of a shaft in an optical storage drive is normally distributed with a mean of .2508 inches and a standard deviation of .0005 inches. The specifications on the shaft are $.2500 \pm .0015$ inches. What proportion of shafts conform to the specifications?
+
+To get the mean = 0 and variance = 1, we standardize using the Z variable (x-mu / sd).
+We can then calculate the probability x + or - .0015 from .2500.
+
+```{r}
+# Left of the curve, probability to be subtracted
+leftBound <- pnorm((.2485-.2508)/.0005)
+
+# Right of the curve
+rightBound <- pnorm((.2515-.2508)/.0005)
+
+proportion <- rightBound - leftBound
+#proportion = 0.91924122831152
+
+# Altering the mean/sd we can find these values as well.
+pnorm(.2515, mean = .2508, sd = .0005) - pnorm(.2485, mean = .2508, sd = .0005)
+```
+
+@. In a state lottery, a single digit is drawn independently from each of four containers. Each container has 10 balls numbered 0-9. You choose a 4 digit number and bet $1, if you win you will receive \$4999, so a total of \$5000 (this includes your original bet). If you lose than you lose your original bet. What is your expected value for playing the lottery? 
+
+E[X] = sum(x * f(x))
+
+$(-1 * (9999/10000)) + (5000 * (1/10000)) = -.4999$
+
+Expected value for playing the lottery is $\approx$ -$0.49.
+
+@. Let Z be a standard normal distribution. Using R, solve for: $P(Z < 1.32)$, $P(Z > 1.45)$, $(-2.76 < Z < 1.34)$, and $P(Z < z) = .68$. 
+
+```{r}
+#P(Z < 1.32)
+pnorm(1.32)
+
+#P(Z > 1.45)
+pnorm(1.45, lower.tail = F)
+
+#P(-2.76 < Z < 1.34)
+pnorm(1.34) - pnorm(-2.76)
+
+#P(Z < z) = .68
+qnorm(0.68)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

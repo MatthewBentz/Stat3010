@@ -1,0 +1,138 @@
+---
+title:  "Intro to R HW"
+author: "Matthew Bentz"
+date:   "1/19/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercise 1 & 2
+
+Importing the data from 'baseball.csv' as a data frame and checking for 'Factor' structures.
+
+```{r}
+baseball <- read.csv("C:/Users/matth/Downloads/baseball.csv")
+
+is.factor(baseball$bat)
+is.factor(baseball$throw)
+is.factor(baseball$field)
+```
+
+# Exercise 3
+
+Create a subset of pitchers and calculate the mean standard deviation of the ERA.
+
+```{r}
+pitchers <- subset(baseball, field == 0)
+
+sd(pitchers$average)
+```
+
+# Exercise 4
+
+Create a subset of fielders and calculate the mean standard deviation of the batting average.
+
+```{r}
+fielders <- subset(baseball, field == 1)
+
+sd(fielders$average)
+```
+
+# Exercise 5
+
+Define BMI and add it to the data frame.
+
+```{r}
+bmi <- (baseball$weight * 703) / baseball$height^2
+
+baseball$bmi <- bmi
+```
+
+# Exercise 6
+
+Sort the values in increasing order by BMI.
+
+```{r}
+baseball <- baseball[order(baseball$bmi, decreasing = FALSE),]
+
+print(baseball)
+```
+
+# Exercise 7
+
+Comparison boxplot of the BMI's of pitchers and fielders.
+
+```{r}
+boxplot(subset(baseball, field == 1)$bmi, subset(baseball, field == 0)$bmi,
+        names=c("Fielders", "Pitchers"))
+```
+
+# Exercise 8
+
+Mean/Standard Deviation of the heights, weights, and BMI's of fielders.
+
+```{r}
+fielders <- subset(baseball, field == 1)
+
+# --- Mean --- #
+
+## Height
+mean(fielders$height)
+
+## Weight
+mean(fielders$weight)
+
+## BMI
+mean(fielders$bmi)
+
+# --- Standard Deviation --- #
+
+## Height
+sd(fielders$height)
+
+## Weight
+sd(fielders$weight)
+
+## BMI
+sd(fielders$bmi)
+```
+
+# Exercise 9
+
+The difference between the avg. ERA of pitchers who's BMI is >= 25 and the avg. ERA of pitchers with BMI < 25, shown as absolute value.
+
+```{r}
+pitchers <- subset(baseball, field == 0)
+
+abs(mean(subset(pitchers, bmi >= 25)$average) - mean(subset(pitchers, bmi < 25)$average))
+```
+
+# Exercise 10
+
+Create a new data frame that contains overweight players based on BMI.
+
+```{r}
+owbb <- subset(baseball, bmi >= 25)
+
+print(owbb)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

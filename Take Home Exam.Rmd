@@ -1,0 +1,105 @@
+---
+title: "Take Home Exam"
+author: "Matthew Bentz"
+date: "2/24/2022"
+output: pdf_document
+---
+
+# Part 1
+
+```{r}
+set.seed(1994)
+x<-c(1,3)
+m.4<-m.10<-m.20<-m.50<-NULL
+for(i in 1:1000){
+m.4[i]<-mean(sample(x,4,replace = TRUE))
+m.10[i]<-mean(sample(x,10,replace = TRUE))
+m.20[i]<-mean(sample(x,20,replace = TRUE))
+m.50[i]<-mean(sample(x,50,replace = TRUE))
+}
+par(mfrow=c(2,2))
+hist(m.4)
+hist(m.10)
+hist(m.20)
+hist(m.50)
+```
+
+```{r}
+# Center of all 4 samples
+median(m.4)
+median(m.10)
+median(m.20)
+median(m.50)
+
+mean(m.4)
+mean(m.10)
+mean(m.20)
+mean(m.50)
+```
+
+1. The center does match our assumptions for the CLT because the median is always 2. The central limit theorem theorizes that with sufficient samples, a distribution can be modeled as normal in which the mean/median has the most probability. We can see that with a hypothetical infinite amount of samples from 1, 2, and 3, the average of these samples will be 2. This is because they all have the same probability, so we can describe the expected outcome as (33%)(1) + (33%)(2) + (33%)(3) = 2.
+
+2. The spread tightens as you go from m.4 to m.50. This is because with larger sample sizes the mean will have a higher likelihood to be closer to 2 which is the expected value (mean) of the sample space as shown in 1. $E[X]= (1+2+3)/3$. With only 4 samples, it is likely we will see matrices such as [1, 1, 1, 1] and [3, 3, 3, 3], but with 50 samples it is very unlikely to see all values picked as 1, 2, or 3 in return moving the average towards 2. 
+
+# Part 2
+
+3. 
+```{r}
+#install.packages("Sleuth3")
+library(Sleuth3)
+
+data(ex0126)
+ex0126$State = as.factor(ex0126$State)
+```
+
+4. There are 243 Democrats, 1 Independent, and 246 Republicans.
+```{r}
+summary(ex0126)
+```
+
+5. California has the most representatives with 58, and Alaska, Montana, North Dakota, South Dakota, and Wyoming have the least representatives with 1 each. 
+
+```{r}
+summary(ex0126$State)
+```
+
+6. The mean percentage of the number of people in Congress that voted 'Pro' for the environment through the year 2005 and 2007 is 50.90785% or .5090785. This means that on average a congressman/congresswoman would vote pro about half of the time.
+
+```{r}
+mean(ex0126$PctPro)
+```
+
+7. The shape of the histogram could be described as (almost) symmetrical. The spread of the histogram is very wide, with the highest frequencies being 0% or 100%. The bimodality of the graph tells a story that Republicans and Democrats usually vote one-sided regarding environmental issues. Very few representatives switch from pro or anti votes -- even once. This is consistent towards 50% which is one of the least likely outcomes for a representative to be in.
+
+```{r}
+hist(ex0126$PctPro, 
+     main="Histogram of the Percentage of 'Pro' Votes", 
+     xlab="Percent Pro", col="light blue", border="red")
+```
+
+8. There are not any outliers, which would be represented by circles above or below the boxplot.
+The IQR (interquartile range) is = |Q3 - Q1|. So approximately 90% - 10% = 80%.
+
+```{r}
+boxplot(ex0126$PctPro, 
+        main="Boxplot of the Percentage of 'Pro' Votes", 
+        xlab="Party (All)", ylab="Percent 'Pro'",
+        col="light blue")
+```
+
+9. 
+
+```{r}
+noIndependents <- subset(ex0126, ex0126$Party != 'I')
+
+noIndependents$Party = factor(noIndependents$Party)
+```
+
+10. When the boxplot showing percentage of votes pro gets separated by party, we can see a clear difference in the way Republicans (R) and Democrats (D) vote. The Democrat boxplot shows a high percentage of representatives near the 100% mark, contrary to the Republican boxplot which shows a high percentage near the 0% mark. You can infer from the chart that Democrats will most likely vote 'pro' for environmental issues and Republicans will most likely vote 'anti'. 
+
+```{r}
+boxplot(noIndependents$PctPro ~ noIndependents$Party,
+        main="Boxplots of Percentage 'Pro' by Party",
+        xlab="Party", ylab="Percent 'Pro'", 
+        col="light blue")
+```

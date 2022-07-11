@@ -1,0 +1,266 @@
+---
+title: "Final Exam"
+author: "Matthew Bentz"
+date: "5/3/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Part 1 - Knowledge-Based Questions
+
+@. a) Show that $P(A) = 1 - P(A^c)$.
+
+We are going to use the fact $(A \cup A^c) = \mathcal{S}$ and that $A \cap A^c = \emptyset$ (they are mutually exclusive). With these two facts, we have that: 
+
+\begin{align*}
+P(\mathcal{S}) &= 1 \Rightarrow \\
+P(A \cup A^c) &= 1 \\
+P(A) + P(A^c) &= 1 \\
+P(A) &= 1 - P(A^c) \\
+\end{align*}
+
+|           b.) Show that $P(\emptyset) = 0$.
+
+We again use the fact that $\mathcal{S} \cup \emptyset = \mathcal{S}$ (everything unioned with nothing means we still have everything), and the fact that $\mathcal{S} \cap \emptyset = \emptyset$ (everything and nothing have nothing in common) to have that: 
+
+\begin{align*}
+P(\mathcal{S}) & = 1 \\
+P(\mathcal{S} \cup \emptyset) &= 1\\
+P(\mathcal{S}) + P(\emptyset) &= 1\\
+1 + P(\emptyset) & = 1 \\
+P(\emptyset) &= 0 \\
+\end{align*}
+
+@. Show that events A and B cannot be both mutually exclusive and independent.
+
+We define mutual exclusivity as $P(A \cup B) = P(A) + P(B)$ or $P(A \cap B) = 0$ and independence as $P(A \cap B) = P(A)P(B)$. If we assume the events are independent: 
+
+\begin{align*}
+P(A \cap B) &= P(A)P(B)
+\end{align*}
+
+Then if the events were also mutually exclusive:
+
+\begin{align*}
+P(A \cap B) &= 0
+\end{align*}
+
+This shows that the events cannot be mutually exclusive if they are independent (and vice versa) because the probabilities of events A and B are greater than 0, $P(A)P(B) \neq 0$.
+
+@. Find the value of $c$ such that $f(y)$ is a probability distribution.
+
+The total probability of a distribution must be equal to 1, shown by $P(\mathcal{S}) = 1$. We can use this fact to find $c$ by setting $f(y) = 1$ and plugging in all values for $y$.
+
+\begin{align*}
+f(y) &= 1 \Rightarrow \\
+cy &= 1 \\
+c1 + c2 + c3 +c4 + c5 &= 1 \\
+c(1 + 2 + 3 + 4 + 5) &= 1 \\
+c(15) &= 1 \\
+c &= \frac{1}{15}
+\end{align*}
+
+@. Find the value of $c$ such that $f(x)$ is a probability distribution.
+
+We can again use the fact that the total probability of $f(x)$ will be equal to 1. Because $x$ is a continuous random variable, we will have to take the integral of $f(x)$ to find our $c$ value.
+
+$$f(x) = \begin{cases}
+ce^{-.15(x-.5)} & x \geq .5 \\
+0 & \text{otherwise} 
+\end{cases}$$
+
+\begin{align*}
+\int_{0.5}^{\infty} ce^{-.15(x-.5)}dx &= 1 \\
+c(6.667) &= 1 \\
+\Rightarrow c &= .15
+\end{align*}
+
+@. a.) Find the maximum likelihood estimator for $\theta$. 
+
+Step 1: Find the likelihood function $L(\theta) = \prod_{i=1}^{n} f(x_i)$.
+
+\begin{align*}
+L(\theta) &= (\theta + 1)^{10}\prod_{i=1}^{10} (x_i)^\theta
+\end{align*}
+
+Step 2: Take the log of the likelihood function.
+
+\begin{align*}
+ln(L) &= 10ln(\theta + 1) + ln\prod_{i=1}^{10} (x_i)^\theta \\
+&= 10ln(\theta + 1) + \theta\sum_{i=1}^{10} ln(x_i)
+\end{align*}
+
+Step 3: Calculate the first derivative and set it equal to 0.
+
+\begin{align*}
+\frac{\partial ln(L)}{\partial\theta} &= \frac{10}{\theta + 1} + \sum_{i=1}^{10} ln(x_i) = 0
+\end{align*}
+
+Step 4: Solve for the parameter $\theta$.
+
+\begin{align*}
+\hat{\theta} &= \frac{-10-\sum_{i=1}^{10} ln(x_i)}{\sum_{i=1}^{10} ln(x_i)}
+\end{align*}
+
+|           b.) Computing the point estimate with the given data.
+
+\begin{align*}
+\hat{\theta} &= \frac{-10-\sum_{i=1}^{10} ln(x_i)}{\sum_{i=1}^{10} ln(x_i)} \\
+&= \frac{-10+2.4295}{-2.4295} \\
+&\Rightarrow 3.116
+\end{align*}
+
+\newpage
+
+# Part II - Statistical Analysis of a Dataset
+
+@. Accessing the data set.
+
+```{r}
+library(MASS)
+data(birthwt)
+```
+
+The data from the 'birthwt' data set consists of 189 samplings of a newborn and his/her mother to analyze the risk factors associated with an infant's low birth weight. It is structured in a way that all points of data can be expressed numerically, and each of the 10 columns represents a recording of data in the 189 rows. There are three types of variables in the set - true/false indicators, placeholders, and measurements. The true/false indicators (0=false, 1=true) are the variables for the birth weight being less than 2.5kg (low), smoking status during pregnancy (smoke), history of hypertension (ht), and presence of uterine irritability (ui). The placeholder type variable is associated with the mother's race (race); 1 = white, 2 = black, 3 = other. Finally, the measurements variables are the mother's age in years (age), the mother's weight in pounds at the last menstrual period (lwt), number of previous premature labours (ptl), number of physician visits during the first trimester (ftv), and the birth weight in grams (bwt). 
+
+@. Removing 'low' and coercing variables as factors.
+
+```{r, results='hide'}
+birthdata <- subset(data.frame(birthwt), select = -c(1))
+birthdataNoFactors = birthdata
+birthdata$smoke = as.factor(birthdata$smoke)
+birthdata$ht = as.factor(birthdata$ht)
+birthdata$ui = as.factor(birthdata$ui)
+birthdata$race = as.factor(birthdata$race)
+```
+
+@. Histogram for birth weights.
+
+```{r}
+hist(birthdata$bwt, 
+     main = 'Histogram of Birth Weight in Grams',
+     xlab = 'Birth Weight',
+     ylab = 'Frequency',
+     col = 'orange')
+```
+
+The histogram for birth weight resembles a normal distribution centered around 3000 grams. The histogram also show a unimodal and symmetric, bell-shaped curve with a negligible left skew.
+
+@. Birth Weight boxplots by race.
+
+```{r}
+boxplot(birthdata$bwt ~ birthdata$race,
+        main = 'Boxplot of Birth Weight by Race',
+        xlab = 'Race (1 = white, 2 = black, 3 = other)',
+        ylab = 'Birth Weight (grams)',
+        col = 'orange')
+```
+
+The medians are unexpectedly relatively the same, around 3000g (denoted by the black line). The spread of birth weight in white mothers is much more comparative to black and other races. White mothers also have a noticeably higher interquartile range (denoted by the orange box), which represents 25% to 75% of the samples taken. We could conclude from this boxplot that white mothers may have heavier infants but also have a greater variance when compared to infants of other races.
+
+@. Two-sample t-tests for population mean birth weights among the three different races.
+
+```{r}
+# First, we must find the standard deviations of each sample to 
+# determine whether or not to conduct pooled hypothesis tests.
+
+bwtWhite <- subset(birthdata$bwt, birthdata$race == 1)
+bwtBlack <- subset(birthdata$bwt, birthdata$race == 2)
+bwtOther <- subset(birthdata$bwt, birthdata$race == 3)
+
+sd(bwtWhite)
+sd(bwtBlack)
+sd(bwtOther)
+```
+
+Based on our results, we can say that $\sigma_{white} = \sigma_{other}$, but $\sigma_{black} \neq \sigma_{white}$ and $\sigma_{black} \neq \sigma_{other}$.
+
+```{r}
+t.test(bwtWhite, bwtBlack, var.equal = F, conf.level = 0.99)
+t.test(bwtWhite, bwtOther, var.equal = T, conf.level = 0.99)
+t.test(bwtBlack, bwtOther, var.equal = F, conf.level = 0.99)
+```
+
+We performed three two-sample t-tests to see whether there was a statistical significance in the population mean birth weights among the three difference races at a confidence of 99%. We got p-values that were all greater than our level of significance value, $\alpha = .01$, so we fail to reject the null hypothesis. That is, the population mean birth weights among the three races are not statistically different at a level of significance $\alpha = .01$.
+
+@. Fitting an ANOVA model using race.
+
+```{r}
+# We first need to alter the lengths of our data
+# sets so that they can fit our data frame.
+
+length(bwtBlack) <- length(bwtWhite)
+length(bwtOther) <- length(bwtWhite)
+
+suppressWarnings(library(tidyr))
+bwtRace = data.frame(bwtWhite, bwtBlack, bwtOther)
+bwtRace = gather(bwtRace, key = "Race", value = "Weight", bwtWhite, bwtBlack, bwtOther)
+bwtRace$Race = as.factor(bwtRace$Race)
+
+raceAOV = aov(bwtRace$Weight ~ bwtRace$Race)
+summary(raceAOV)
+```
+
+We performed a one-way ANOVA test for the population means of birth weight being statistically different between the three races. Our test statistic was $F = 4.913$ with $df_1 = 2$ and $df_2 = 186$, which corresponds to a p-value of 0.00834. Since $p < \alpha$ we can reject the null hypothesis that the mean birth weights between the three races are not statistically different. In other words, we can say that there are at least two races in which there are statistically significant differences in birth weights. The output from this ANOVA model does not match the previous question, in which we found no statistical difference in the population mean birth weights of the three races. We may consider fighting for the ANOVA model instead of the three separate hypothesis tests because it does not compare them individually which results in smaller room for error. When comparing the samples individually, we allow for a margin of error that compounds with each comparison.
+
+@. Fitting a regression model.
+
+```{r}
+birthFit = lm(bwt ~ ., data = birthdata)
+summary(birthFit)
+plot(birthFit)
+```
+
+Variables $lwt$, $race$, $smoke$, $ht$, and $ui$ are significant predictors of an infants birth weight. 24.27% of the total variability of birth weight is explained by the linear combination of these variables. No assumptions about the regression model are violated.
+
+@. Finding the pairwise correlations.
+
+```{r}
+birthdataSig <- subset(birthdataNoFactors, select = c(2,3,4,6,7,9))
+cor(birthdataSig)
+```
+
+Based on our correlation values, we can see that there is no one single factor that has a strong linear relationship with birth weight. For all five factors we see a range of values from [-0.284, 0.186] which would be considered as very weak or no correlation to the birth weight.
+
+@. Plotting the pairwise scatterplot matrix.
+
+```{r}
+pairs(birthdataSig)
+```
+
+When looking at our scatterplot matrix, we again can see no linear relationship between any variable and infant's birth weight. You could argue that mother's weight (lwt) has some sort of relationship, but mostly due to the fact that the data points are measurements and not factors. It is interesting to note that none of the single variables has a noticeable effect, but combined they are decent predictors.
+
+@. Fitting another regression model.
+
+```{r}
+birthdataSig <- subset(birthdata, select = c(2,3,4,6,7,9))
+birthdataSigFit = lm(bwt ~ ., data = birthdataSig)
+summary(birthdataSigFit)
+plot(birthdataSigFit)
+```
+
+The two models are very similar to one another, however, I would say that this model containing only significant predictors is better because it is parsimonious. Both models have approximately the same coefficient of determination ($R^2$), but the second has a greater predictive power due to it's parsimony. This second model will be more immutable towards new data because insignificant variables are not included as predictors to birth weight since they are uncorrelated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

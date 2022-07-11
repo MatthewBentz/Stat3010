@@ -1,0 +1,96 @@
+---
+title: "Homework 5"
+author: "Matthew Bentz"
+date: "4/25/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.
+
+$$
+\begin{aligned}
+r\frac{S_y}{S_x} &= \frac{S_{xy}}{S_{xx}} \\
+r &= \frac{S_{xy}\sqrt{S_{xx}}}{S_{xx}\sqrt{S_{yy}}} \\
+r &= \frac{S_{xy}}{\sqrt{S_{xx}}\sqrt{S_{yy}}} \\
+S_{xy} &= r\sqrt{S_{xx}}\sqrt{S_{yy}} \\
+b_1 &= \frac{r\sqrt{S_{xx}}\sqrt{S_{yy}}}{S_{xx}} \\
+b_1 &= r\frac{\sqrt{S_{yy}}}{\sqrt{S_{xx}}} \\
+b_1 &= r\frac{S_y}{S_x}
+\end{aligned}
+$$
+
+## 2. 
+
+```{r}
+temp <- c(30,29,33,29,28,29,29,32,32,29,29,28,30,28,28,27,26,28,29,23)
+hum <- c(67,63,78,62,47,47,60,61,50,63,63,52,67,62,65,49,60,62,63,54)
+strength <- c(23.6, 18.1,18.4,16.9,28.6,32.2,25.0,20.7,20.6,30.7,30.2,42.3,14.5,23.4,18.7,21.0,17.9,23.5,24.9,22.5)
+weight <- c(11.58, 11.61,12.04,12.98,10.77,11.23,11.91,12.05,11.83,11.26,11.75,12.03,13.40,12.82,12.63,11.10,12.09,11.73,12.11,12.04)
+
+plot(strength ~ temp)
+cor(strength, temp)
+plot(strength ~ hum)
+cor(strength, hum)
+plot(strength ~ weight)
+cor(strength, weight)
+```
+
+There is little to no relationship between temperature and cone strength. The linear correlation coefficient shows a weak negative correlation of -0.137. The relationship between humidity and cone weight on cone strength shows a similarly stronger correlation of -0.445 and -0.467 respectively. A decrease in humidity and cone weight will give a noticeably positive effect on cone strength.
+
+## 3. 
+
+```{r}
+plot(strength ~ hum)
+abline(lm(strength ~ hum))
+
+fit = lm(strength ~ hum) # Fits the regression model
+summary(fit) # To see all the good stuff
+mean(residuals(fit)^2)
+```
+
+Humidity is statistically significant in modeling cone strength. We can see that from the p-value of 0.0493 at a confidence level of $\alpha = 0.05$ that we would reject the null hypothesis that there is no significant effect of humidity on cone strength. The coefficient $b_1$ of the model shows that with a one unit increase in humidity, there is a -0.3735 unit decrease in cone strength. The coefficient $b_0$ is ~46 which shows the predicted value of cone strength when humidity is zero.
+
+## 4.
+
+19.8% of the total variability of cone strength is explained by relative humidity. The mean square error of the model is $6.019^2$ or 36.23.
+
+## 5.
+
+```{r}
+plot(lm(strength ~ hum))
+```
+
+The errors are normally distributed, as shown in the Normal Q-Q plot with points generally on the line. There is a linear relationship between humidity and cone strength, as shown in the Residuals vs Fitted plot with the line having a relatively small amount of variability and influx. Point 12 could be considered influential, since it is close to the 0.5 line on the leverage graph. It can also be considered an outlier based on its high residual error from the Residuals vs Fitted graph.
+
+## 6.
+
+```{r}
+allFit <- lm(strength ~ hum + temp + weight)
+summary(allFit)
+```
+When all the variables are included in the model, none of them are statistically significant. We can see this from the p-values being much greater than our $\alpha$ at 0.05. 
+
+## 7.
+
+```{r}
+strFit <- lm(strength ~ weight)
+summary(strFit)
+```
+This model's $R^2$ is similar to the $R^2$ of the previous question - even less. Regardless, I would choose the model with only the cone weight as a predictor because it has statistical significance as well as a stronger and more predictable relationship with cone strength.
+
+## 8.
+
+From the previous model, we can use the values of 80.141 as our $b_0$ and -4.725 as our $b_1$. This will provide us with the equation $\widehat{strength} = b_0 + b_1weight$ or $\widehat{strength} = 80.141 - 4.725weight$. Plugging in 12g for our value of weight, we find that the predicted value of cone strength is 23.441 N.
+
+
+
+
+
+
+
+
+
